@@ -40,7 +40,6 @@ public class StateTree {
                 }
             }
         }
-        System.out.println("Size: " + inTree.size());
     }
 
     private List<Node> getPossibleMoves(Node node, List<Node> inTree) {
