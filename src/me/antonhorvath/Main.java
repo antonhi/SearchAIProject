@@ -7,10 +7,10 @@ public class Main {
 
     public static void main(String[] args) {
         List<Character> test = new ArrayList<>();
-        test.add('*');
+        test.add('1');
         test.add('2');
         test.add('3');
-        test.add('1');
+        test.add('*');
         test.add('7');
         test.add('5');
         test.add('4');
@@ -18,6 +18,7 @@ public class Main {
         test.add('8');
         StateTree tree = new StateTree(new Node(test));
         outputInformation("DFS Search", tree.dfsSearch());
+        outputInformation("Iterative Deepening Search", tree.iterativeDeepeningSearch());
     }
 
     private static void outputInformation(String type, List<Node> path) {

@@ -9,6 +9,8 @@ public class StateTree {
 
     private Node root;
 
+    private int height;
+
     public StateTree (Node root) {
         this.root = root;
         generate();
@@ -40,6 +42,7 @@ public class StateTree {
                 }
             }
         }
+        height = totalHeight;
     }
 
     private List<Node> getPossibleMoves(Node node, List<Node> inTree) {
@@ -101,6 +104,49 @@ public class StateTree {
 
             visited.add(parent);
 
+        }
+        List<Node> defaultNodeList = new ArrayList<>();
+        defaultNodeList.add(root);
+        return defaultNodeList;
+    }
+
+    public List<Node> iterativeDeepeningSearch() {
+        List<Node> visited = new ArrayList<>();
+        Stack<Node> nodeStack = new Stack<>();
+        if (root != getTarget()) {
+            for (int d = 0; d < height; d++) {
+                int depth = 0;
+                int counter = 0;
+                List<Integer> nodesInDepth = new ArrayList<>();
+                nodeStack.push(root);
+                nodesInDepth.add(1);
+                while (!nodeStack.empty()) {
+                    Node parent = nodeStack.peek();
+
+                    if (parent.equals(getTarget())) {
+                        return getPath(nodeStack);
+                    }
+
+                    if (depth == d || parent.getNextNodes().isEmpty() || visited.contains(parent)) {
+                        nodeStack.pop();
+                        counter++;
+                        if (counter == nodesInDepth.get(depth)) {
+                            counter = 0;
+                            depth--;
+                        }
+                    }
+
+                    else {
+                        depth++;
+                        nodesInDepth.add(parent.getNextNodes().size());
+                        for (Node n : parent.getNextNodes()) {
+                            nodeStack.push(n);
+                        }
+                        visited.add(parent);
+                    }
+                }
+                visited.clear();
+            }
         }
         List<Node> defaultNodeList = new ArrayList<>();
         defaultNodeList.add(root);
