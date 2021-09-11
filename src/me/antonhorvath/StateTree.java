@@ -1,9 +1,6 @@
 package me.antonhorvath;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class StateTree {
 
@@ -110,6 +107,50 @@ public class StateTree {
         return defaultNodeList;
     }
 
+    public List<Node> aStarHeuristicOne() {
+        // g(n) represents the number of nodes away from the root node
+        // h(n) represents the number of misplaced nodes
+        int awayFromRoot = 0;
+        Node traverse = root;
+        Stack<Node> nodeStack = new Stack<>();
+
+        while (traverse != null) {
+            nodeStack.push(traverse);
+            if (traverse.equals(getTarget())) {
+                return getPath(nodeStack);
+            }
+            if (traverse.getNextNodes().isEmpty()) {
+                traverse = null;
+            }
+            else {
+                HashMap<Integer, Node> values = new HashMap<>();
+                int minimum = Integer.MAX_VALUE;
+                for (Node n : traverse.getNextNodes()) {
+                    int value = awayFromRoot+getNumberOfMisplacedTiles(n);
+                    values.put(value, n);
+                    if (value < minimum) {
+                        minimum = value;
+                    }
+                }
+                traverse = values.get(minimum);
+            }
+            awayFromRoot++;
+        }
+
+        List<Node> defaultNodeList = new ArrayList<>();
+        defaultNodeList.add(root);
+        return defaultNodeList;
+    }
+
+    public List<Node> aStarHeuristicTwo() {
+
+
+
+        List<Node> defaultNodeList = new ArrayList<>();
+        defaultNodeList.add(root);
+        return defaultNodeList;
+    }
+
     public List<Node> iterativeDeepeningSearch() {
         List<Node> visited = new ArrayList<>();
         Stack<Node> nodeStack = new Stack<>();
@@ -177,6 +218,19 @@ public class StateTree {
     private Node getTarget() {
         List<Character> state = Arrays.asList('1', '2', '3', '4', '*', '5', '6', '7', '8');
         return new Node(state);
+    }
+
+    private int getNumberOfMisplacedTiles(Node node) {
+        int count = 0;
+        int index = 0;
+        Node target = getTarget();
+        for (char c : node.getState()) {
+            if (c != target.getState().get(index)) {
+                count++;
+            }
+            index++;
+        }
+        return count;
     }
 
 

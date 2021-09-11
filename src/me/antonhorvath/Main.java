@@ -19,6 +19,7 @@ public class Main {
         StateTree tree = new StateTree(new Node(test));
         outputInformation("DFS Search", tree.dfsSearch());
         outputInformation("Iterative Deepening Search", tree.iterativeDeepeningSearch());
+        outputInformation("A* Search - Heuristic #1", tree.aStarHeuristicOne());
     }
 
     private static void outputInformation(String type, List<Node> path) {
