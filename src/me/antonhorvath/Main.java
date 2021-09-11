@@ -6,6 +6,7 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
+
         List<Character> test = new ArrayList<>();
         test.add('1');
         test.add('2');
@@ -19,7 +20,8 @@ public class Main {
         StateTree tree = new StateTree(new Node(test));
         outputInformation("DFS Search", tree.dfsSearch());
         outputInformation("Iterative Deepening Search", tree.iterativeDeepeningSearch());
-        outputInformation("A* Search - Heuristic #1", tree.aStarHeuristicOne());
+        outputInformation("A* Search - Heuristic #1", tree.aStarSearch(true));
+        outputInformation("A* Search - Heuristic #2", tree.aStarSearch(false));
     }
 
     private static void outputInformation(String type, List<Node> path) {

@@ -107,9 +107,9 @@ public class StateTree {
         return defaultNodeList;
     }
 
-    public List<Node> aStarHeuristicOne() {
+    public List<Node> aStarSearch(boolean misplaced) {
         // g(n) represents the number of nodes away from the root node
-        // h(n) represents the number of misplaced nodes
+        // h(n) represents the number of misplaced tiles
         int awayFromRoot = 0;
         Node traverse = root;
         Stack<Node> nodeStack = new Stack<>();
@@ -126,7 +126,7 @@ public class StateTree {
                 HashMap<Integer, Node> values = new HashMap<>();
                 int minimum = Integer.MAX_VALUE;
                 for (Node n : traverse.getNextNodes()) {
-                    int value = awayFromRoot+getNumberOfMisplacedTiles(n);
+                    int value = awayFromRoot+(misplaced ? getNumberOfMisplacedTiles(n) : getNumberOfTilesGreaterThanNext(n));
                     values.put(value, n);
                     if (value < minimum) {
                         minimum = value;
@@ -136,15 +136,6 @@ public class StateTree {
             }
             awayFromRoot++;
         }
-
-        List<Node> defaultNodeList = new ArrayList<>();
-        defaultNodeList.add(root);
-        return defaultNodeList;
-    }
-
-    public List<Node> aStarHeuristicTwo() {
-
-
 
         List<Node> defaultNodeList = new ArrayList<>();
         defaultNodeList.add(root);
@@ -232,6 +223,25 @@ public class StateTree {
         }
         return count;
     }
+
+    private int getNumberOfTilesGreaterThanNext(Node node) {
+        int count = 0;
+        List<Character> state = node.getState();
+        for (int i = 0; i < state.size()-1; i++) {
+            if (state.get(i+1) == '*' && (i+2) != state.size()) {
+                if (state.get(i) > state.get(i+2)) {
+                    count++;
+                }
+            }
+            else {
+                if (state.get(i) > state.get(i+1)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
 
 
 }
