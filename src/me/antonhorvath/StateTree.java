@@ -48,9 +48,10 @@ public class StateTree {
         int index = state.indexOf('*');
         for (int i : getAdjacent(index)) {
             Node newNode = new Node(getNewState(state, index, i));
-            if (!inTree.contains(newNode)) {
+            /*if (!inTree.contains(newNode)) {
                 possibleNodes.add(newNode);
-            }
+            }*/
+            possibleNodes.add(newNode);
         }
         return possibleNodes;
     }
