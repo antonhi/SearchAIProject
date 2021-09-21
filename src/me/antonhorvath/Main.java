@@ -12,15 +12,26 @@ public class Main {
         if (test.isEmpty()) {
             return;
         }
+        int searchCode = getSearchCode();
         StateTree tree = new StateTree(new Node(test));
-        outputInformation("DFS Search", tree.dfsSearch());
-        outputInformation("Iterative Deepening Search", tree.iterativeDeepeningSearch());
-        outputInformation("A* Search - Heuristic #1", tree.aStarSearch(true));
-        outputInformation("A* Search - Heuristic #2", tree.aStarSearch(false));
+        switch (searchCode) {
+            case 1:
+                outputInformation("DFS Search", tree.dfsSearch());
+                break;
+            case 2:
+                outputInformation("Iterative Deepening Search", tree.iterativeDeepeningSearch());
+                break;
+            case 3:
+                outputInformation("A* Search - Heuristic #1", tree.aStarSearch(true));
+                break;
+            case 4:
+                outputInformation("A* Search - Heuristic #2", tree.aStarSearch(false));
+                break;
+        }
     }
 
     private static void outputInformation(String type, List<Node> path) {
-        System.out.println(type+"\n------------------------------------------");
+        System.out.println("\n"+type+"\n------------------------------------------");
         System.out.println("Input\n");
         path.get(path.size()-1).printState();
         System.out.println("\nOutput\n");
@@ -49,6 +60,28 @@ public class Main {
             }
         }
         return characters;
+    }
+
+    private static int getSearchCode() {
+        Scanner scan = new Scanner(System.in);
+        int value = -1;
+        System.out.println("Enter the code of the search algorithm (1, 2, 3, 4):");
+        System.out.println("   1. DFS Search");
+        System.out.println("   2. Iterative Deepening Search");
+        System.out.println("   3. A* Heuristic Search #1");
+        System.out.println("   4. A* Heuristic Search #2");
+        while (value < 1 || value > 4) {
+            String input = scan.nextLine();
+            try {
+                value = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid price code");
+            }
+            if (value < 1 || value > 4) {
+                System.out.println("Please enter a value between 1-4 inclusive");
+            }
+        }
+        return value;
     }
 
 }

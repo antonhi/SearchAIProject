@@ -153,7 +153,7 @@ public class StateTree {
                 List<Integer> nodesInDepth = new ArrayList<>();
                 nodeStack.push(root);
                 nodesInDepth.add(1);
-                while (!nodeStack.empty()) {
+                while (!nodeStack.empty() && depth >= 0) {
                     Node parent = nodeStack.peek();
 
                     if (parent.equals(getTarget())) {
@@ -187,6 +187,7 @@ public class StateTree {
     }
 
     private List<Node> getPath(Stack<Node> stack) {
+        System.out.println("\nNumber of states enqueued: " + stack.size());
         List<Node> path = new ArrayList<>();
         int count = -1;
         while (!stack.empty()) {
@@ -204,6 +205,7 @@ public class StateTree {
                 count++;
             }
         }
+        System.out.println("Number of moves: " + (path.size()-1));
         return path;
     }
 
