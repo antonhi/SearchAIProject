@@ -1,5 +1,4 @@
 package me.antonhorvath;
-
 import java.util.*;
 
 public class StateTree {
@@ -18,6 +17,7 @@ public class StateTree {
         List<Node> queue = new ArrayList<>();
         int totalHeight = 0;
         int childNodeAmount = 1;
+        int nextChildNodeAmount = 0;
         int counter = 1;
         if (root != null) {
             queue.add(root);
@@ -29,10 +29,14 @@ public class StateTree {
                 }
                 inTree.add(target);
                 queue.remove(target);
-                if (counter == childNodeAmount) {
+
+                nextChildNodeAmount = target.getNextNodes().isEmpty() ? nextChildNodeAmount : nextChildNodeAmount+target.getNextNodes().size();
+
+                if (counter == childNodeAmount || childNodeAmount < counter) {
                     counter = 1;
                     totalHeight++;
-                    childNodeAmount = target.getNextNodes().isEmpty() ? 0 : target.getNextNodes().size();
+                    childNodeAmount = nextChildNodeAmount;
+                    nextChildNodeAmount = 0;
                 }
                 else {
                     counter++;
@@ -47,28 +51,38 @@ public class StateTree {
         List<Node> possibleNodes = new ArrayList<>();
         int index = state.indexOf('*');
         for (int i : getAdjacent(index)) {
-            Node newNode = new Node(getNewState(state, index, i));
-            /*if (!inTree.contains(newNode)) {
+            Node newNode = new Node(getNewState(state, index, i), node);
+            if (!inTree.contains(newNode)) {
                 possibleNodes.add(newNode);
-            }*/
-            possibleNodes.add(newNode);
+            }
         }
         return possibleNodes;
     }
 
     private int [] getAdjacent(int index) {
-        return switch (index) {
-            case 0 -> new int[]{1, 3};
-            case 1 -> new int[]{0, 2, 4};
-            case 2 -> new int[]{1, 5};
-            case 3 -> new int[]{0, 4, 6};
-            case 4 -> new int[]{1, 3, 5, 7};
-            case 5 -> new int[]{2, 4, 8};
-            case 6 -> new int[]{3, 7};
-            case 7 -> new int[]{4, 6, 8};
-            case 8 -> new int[]{5, 7};
-            default -> new int[]{};
-        };
+        switch (index) {
+
+            case 0:
+                return new int[]{1, 3};
+            case 1:
+                return new int[]{0, 2, 4};
+            case 2:
+                return new int[]{1, 5};
+            case 3:
+                return new int[]{0, 4, 6};
+            case 4:
+                return new int[]{1, 3, 5, 7};
+            case 5:
+                return new int[]{2, 4, 8};
+            case 6:
+                return new int[]{3, 7};
+            case 7:
+                return new int[]{4, 6, 8};
+            case 8:
+                return new int[]{5, 7};
+            default:
+                return new int[]{};
+        }
     }
 
     private List<Character> getNewState(List<Character> currentState, int indexStar, int index) {
@@ -111,31 +125,39 @@ public class StateTree {
     public List<Node> aStarSearch(boolean misplaced) {
         // g(n) represents the number of nodes away from the root node
         // h(n) represents the number of misplaced tiles
-        int awayFromRoot = 0;
         Node traverse = root;
         Stack<Node> nodeStack = new Stack<>();
+        List<Node> visited = new ArrayList<>();
+        HashMap<Node, Integer> values = new HashMap<>();
 
         while (traverse != null) {
-            nodeStack.push(traverse);
+            visited.add(traverse);
             if (traverse.equals(getTarget())) {
-                return getPath(nodeStack);
+                nodeStack.push(traverse);
+                while (traverse.getParent() != null) {
+                    traverse = traverse.getParent();
+                    nodeStack.push(traverse);
+                }
+                return getAStarPath(nodeStack);
             }
-            if (traverse.getNextNodes().isEmpty()) {
-                traverse = null;
-            }
+
             else {
-                HashMap<Integer, Node> values = new HashMap<>();
-                int minimum = Integer.MAX_VALUE;
                 for (Node n : traverse.getNextNodes()) {
-                    int value = awayFromRoot+(misplaced ? getNumberOfMisplacedTiles(n) : getNumberOfTilesGreaterThanNext(n));
-                    values.put(value, n);
-                    if (value < minimum) {
-                        minimum = value;
+                    int value = n.getHeight()+(misplaced ? getNumberOfMisplacedTiles(n) : getNumberOfTilesGreaterThanNext(n));
+                    values.put(n, value);
+                }
+                Node minNode = null;
+                for (Node node : values.keySet()) {
+                    if (!visited.contains(node)) {
+                        if (minNode == null) {
+                            minNode = node;
+                        } else {
+                            minNode = values.get(node) < values.get(minNode) ? node : minNode;
+                        }
                     }
                 }
-                traverse = values.get(minimum);
+                traverse = minNode;
             }
-            awayFromRoot++;
         }
 
         List<Node> defaultNodeList = new ArrayList<>();
@@ -186,8 +208,18 @@ public class StateTree {
         return defaultNodeList;
     }
 
+    private List<Node> getAStarPath(Stack<Node> stack) {
+        System.out.println("\nNumber of states enqueued: " + (stack.size()+1));
+        List<Node> path = new ArrayList<>();
+        while (!stack.empty()) {
+            path.add(stack.pop());
+        }
+        System.out.println("Number of moves: " + (path.size()-1));
+        return path;
+    }
+
     private List<Node> getPath(Stack<Node> stack) {
-        System.out.println("\nNumber of states enqueued: " + stack.size());
+        System.out.println("\nNumber of states enqueued: " + (stack.size()+1));
         List<Node> path = new ArrayList<>();
         int count = -1;
         while (!stack.empty()) {
@@ -211,7 +243,7 @@ public class StateTree {
 
     private Node getTarget() {
         List<Character> state = Arrays.asList('1', '2', '3', '4', '*', '5', '6', '7', '8');
-        return new Node(state);
+        return new Node(state, null);
     }
 
     private int getNumberOfMisplacedTiles(Node node) {

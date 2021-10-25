@@ -13,7 +13,7 @@ public class Main {
             return;
         }
         int searchCode = getSearchCode();
-        StateTree tree = new StateTree(new Node(test));
+        StateTree tree = new StateTree(new Node(test, null));
         switch (searchCode) {
             case 1:
                 outputInformation("DFS Search", tree.dfsSearch());
@@ -33,15 +33,22 @@ public class Main {
     private static void outputInformation(String type, List<Node> path) {
         System.out.println("\n"+type+"\n------------------------------------------");
         System.out.println("Input\n");
-        path.get(path.size()-1).printState();
+        path.get(type.contains("Heuristic") ? 0 : path.size()-1).printState();
         System.out.println("\nOutput\n");
         if (path.size() == 1) {
             System.out.println("Goal State Couldn't Be Reached");
             return;
         }
-        for (int i = path.size()-1; i > -1; i--) {
-            path.get(i).printState();
-            System.out.println();
+        if (type.contains("Heuristic")) {
+            for (int i = 0; i < path.size(); i++) {
+                path.get(i).printState();
+                System.out.println();
+            }
+        } else {
+            for (int i = path.size()-1; i > -1; i--) {
+                path.get(i).printState();
+                System.out.println();
+            }
         }
     }
 

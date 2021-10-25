@@ -7,10 +7,24 @@ public class Node implements Comparable {
 
     private List<Character> state;
     private List<Node> nextNodes;
+    private Node parent;
 
-    public Node (List<Character> state) {
+    public Node (List<Character> state, Node parent) {
         this.state = new ArrayList<>(state);
         nextNodes = new ArrayList<>();
+        this.parent = parent;
+    }
+
+    public Node getParent() { return parent; }
+
+    public int getHeight() {
+        int height = 0;
+        Node p = parent;
+        while (p != null) {
+            height++;
+            p = p.getParent();
+        }
+        return height;
     }
 
     public List<Character> getState() {
